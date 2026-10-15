@@ -19,8 +19,6 @@ const ONOFF = [{ v: 'on', l: 'An' }, { v: 'off', l: 'Aus' }];
 
 const st = { s: null, items: new Map(), rows: new Map(), result: null, req: 0, sel: '1080', checked: new Set(), busy: false, clip: '', batch: new Set(), batchStart: 0, plat: 'all', sd: 0 };
 
-/* ------------------------------ Übersetzung (EN) ------------------------------ */
-
 const EN = {
   'Einstellungen': 'Settings', 'Design wechseln': 'Switch design', 'Link einfügen': 'Paste a link', 'YouTube- oder Spotify-Link': 'YouTube or Spotify link',
   'Einfügen': 'Paste', 'Laden': 'Load', 'Minimieren': 'Minimize', 'Maximieren': 'Maximize', 'Schließen': 'Close', 'Downloads': 'Downloads',
@@ -78,7 +76,6 @@ const t = (s) => {
   return s;
 };
 
-/** Statische Texte im DOM übersetzen; das deutsche Original bleibt am Knoten, damit man zurückwechseln kann. */
 function translateStatic() {
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   for (let n = walker.nextNode(); n; n = walker.nextNode()) {
@@ -96,8 +93,6 @@ function translateStatic() {
   }
 }
 
-/* --------------------------------- Format --------------------------------- */
-
 const bytes = (n) => (n >= 1e9 ? (n / 1e9).toFixed(2) + ' GB' : n >= 1e6 ? (n / 1e6).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1e3)) + ' KB');
 const speed = (b) => (b >= 1e6 ? (b / 1e6).toFixed(1) + ' MB/s' : Math.round(b / 1e3) + ' KB/s');
 const eta = (s) => (s >= 3600 ? `${Math.floor(s / 3600)}:${String(Math.floor((s % 3600) / 60)).padStart(2, '0')}h` : `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`);
@@ -108,8 +103,6 @@ function toast(text) {
   $('#toasts').append(el);
   setTimeout(() => el.remove(), 2800);
 }
-
-/* ---------------------------------- Theme --------------------------------- */
 
 function applyTheme(name) {
   const th = THEMES[name] || THEMES.aurora;
@@ -123,8 +116,6 @@ function setPlatform(p) {
   document.body.dataset.platform = p;
   $('#plat').innerHTML = ICONS[p] || ICONS.link;
 }
-
-/* --------------------------------- Eingabe -------------------------------- */
 
 const msg = (text = '', err = false) => {
   $('#msg').textContent = t(text);
@@ -172,8 +163,6 @@ api.onPartial((id, r) => {
   st.sel = pickQuality(st.s.quality, DEFAULT_HEIGHTS);
   renderResult();
 });
-
-/* -------------------------------- Ergebnis -------------------------------- */
 
 function renderResult() {
   const el = $('#result');
@@ -271,8 +260,6 @@ $('#result').addEventListener('change', (e) => {
   syncResult();
 });
 
-/* --------------------------------- Queue ---------------------------------- */
-
 function statusText(it) {
   if (it.status === 'queued') return t('Wartet …');
   if (it.status === 'paused') return `${t('Pausiert')} · ${Math.round(it.percent)}%`;
@@ -366,7 +353,6 @@ function renderBatch(all) {
   $('#pause-all').dataset.mode = running ? 'pause' : 'resume';
   const pct = b.reduce((s, i) => s + (i.status === 'done' ? 100 : i.percent || 0), 0) / b.length;
   $('#batch-bar').style.width = `${pct}%`;
-  // Restzeit aus dem bisherigen Tempo des ganzen Stapels (stabiler als die Einzel-ETA bei vielen Dateien)
   const sec = ((Date.now() - st.batchStart) / 1000) * ((100 - pct) / Math.max(pct, 1));
   const left = !running ? t('Pausiert') : pct >= 3 && Date.now() - st.batchStart > 5000 ? (sec < 60 ? t('noch < 1 Min') : st.s.lang === 'en' ? (sec < 5400 ? `~${Math.round(sec / 60)} min left` : `~${(sec / 3600).toFixed(1)} h left`) : sec < 5400 ? `noch ~${Math.round(sec / 60)} Min` : `noch ~${(sec / 3600).toFixed(1)} Std`) : '';
   $('#batch-txt').textContent = [`${b.filter((i) => i.status === 'done').length}/${b.length}`, `${Math.round(pct)}%`, left].filter(Boolean).join(' · ');
@@ -410,8 +396,6 @@ $('#cancel-all').onclick = () => api.cancelAll();
 
 const refilter = () => st.rows.forEach((el, id) => patchRow(el, st.items.get(id)));
 $('#qsearch').addEventListener('input', refilter);
-
-/* ---------------------------- Einstellungen / UI --------------------------- */
 
 function seg(el, opts, cur, pick) {
   el.innerHTML = opts.map((o) => `<button data-v="${o.v}" class="${String(o.v) === String(cur) ? 'on' : ''}">${esc(t(String(o.l)))}</button>`).join('');
@@ -476,7 +460,6 @@ function setPlat(v) {
 }
 
 $('#settings-btn').onclick = openSettings;
-/** Schließen übernimmt auch noch nicht gespeicherte Spotify-Zugangsdaten; alle anderen Einstellungen gelten sofort. */
 async function closeSettings() {
   if ($('#settings').hidden) return;
   $('#settings').hidden = true;
@@ -511,8 +494,6 @@ api.onMaximized((m) => {
   $('#max-ico').innerHTML = m ? '<path d="M2.5 2.5V.5h7v7h-2"/><rect x=".5" y="2.5" width="7" height="7"/>' : '<rect x=".5" y=".5" width="9" height="9"/>';
 });
 
-/* ----------------------------- Herunterfahren ----------------------------- */
-
 api.onShutdown((secs) => {
   st.sd = secs;
   $('#shutdown').hidden = false;
@@ -530,8 +511,6 @@ $('#sd-cancel').onclick = () => {
   $('#shutdown').hidden = true;
 };
 
-/* --------------------------------- Eingabe -------------------------------- */
-
 const input = $('#url');
 input.addEventListener('input', () => {
   setPlatform(platformOf(input.value));
@@ -539,7 +518,6 @@ input.addEventListener('input', () => {
 });
 input.addEventListener('keydown', (e) => e.key === 'Enter' && resolve(input.value));
 
-/** Mehrere Links (z. B. aus Spotify kopiert) werden als Liste geladen. */
 function submitText(text) {
   const n = (text.match(/https?:\/\/[^\s]+/g) || []).filter(platformOf).length;
   input.value = n > 1 ? `${n} ${t('Links aus der Zwischenablage')}` : text.trim();
@@ -560,7 +538,6 @@ $('#paste').onclick = async () => {
   submitText(u);
 };
 
-/** Link in der Zwischenablage beim Start und beim Zurückkehren ins Fenster übernehmen. */
 async function takeClipboard() {
   if (input.value || st.result || st.busy) return;
   const u = await api.clipboard();
@@ -569,8 +546,6 @@ async function takeClipboard() {
   submitText(u);
 }
 api.onFocus(takeClipboard);
-
-/* ---------------------------------- Setup --------------------------------- */
 
 api.onSetup((p) => {
   const box = $('#setup');

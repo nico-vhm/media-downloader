@@ -1,4 +1,3 @@
-/* Media Downloader: zwei Designs (Aurora, Terminal). Akzentfarbe folgt dem Link: YouTube rot, Spotify grün. */
 
 @property --ac { syntax: '<color>'; inherits: true; initial-value: #a78bfa; }
 @property --ac2 { syntax: '<color>'; inherits: true; initial-value: #22d3ee; }
@@ -12,8 +11,6 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { height: 100%; overflow: hidden; }
-
-/* ------------------------------ Design-Variablen ------------------------------ */
 
 body {
   --r: 16px; --glass: rgba(255, 255, 255, 0.07); --line: rgba(255, 255, 255, 0.14); --blur: 24px;
@@ -43,8 +40,6 @@ input { font: inherit; user-select: text; }
 input[type="checkbox"] { accent-color: var(--ac); }
 img { display: block; }
 
-/* -------------------------------- Hintergrund -------------------------------- */
-
 .bg { position: fixed; inset: 0; overflow: hidden; z-index: -1; }
 .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; }
 .b1 { width: 480px; height: 480px; left: -120px; top: -160px; background: var(--ac); animation: drift 24s ease-in-out infinite alternate; }
@@ -63,8 +58,6 @@ body[data-theme="terminal"] .bg::after {
 }
 body[data-theme="terminal"] .glass { box-shadow: none; border-radius: var(--r); }
 
-/* --------------------------------- Titelzeile -------------------------------- */
-
 .top { height: 40px; flex: none; display: flex; align-items: center; gap: 10px; padding-left: 16px; -webkit-app-region: drag; }
 .top button, .wc { -webkit-app-region: no-drag; }
 .brand { display: flex; align-items: center; gap: 9px; font-size: 12.5px; color: var(--mut); }
@@ -82,8 +75,6 @@ body[data-theme="terminal"] .glass { box-shadow: none; border-radius: var(--r); 
 .wc button:hover { background: rgba(255, 255, 255, 0.1); }
 .wc .close:hover { background: #e81123; color: #fff; }
 .wc svg { width: 10px; height: 10px; stroke-width: 1; }
-
-/* ----------------------------------- Layout ---------------------------------- */
 
 main {
   flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 14px;
@@ -115,8 +106,6 @@ body[data-theme="terminal"] .plat::before { content: ">"; font-weight: 700; font
 body[data-theme="terminal"] .msg { text-align: left; }
 body[data-theme="terminal"] .msg.err::before { content: "! "; }
 
-/* ----------------------------------- Buttons --------------------------------- */
-
 .primary {
   height: 36px; padding: 0 18px; border: 0; border-radius: var(--r); color: var(--on); font-weight: 650;
   background: linear-gradient(135deg, var(--ac), var(--ac2)); display: inline-flex; align-items: center; justify-content: center;
@@ -143,8 +132,6 @@ body[data-theme="terminal"] #go { border-radius: var(--r); }
 .chip { height: 28px; padding: 0 12px; display: inline-flex; align-items: center; border-radius: 999px; background: rgba(255, 255, 255, 0.08); font-size: 12.5px; color: var(--mut); }
 body[data-theme="terminal"] .chip { border-radius: var(--r); }
 
-/* ---------------------------------- Ergebnis --------------------------------- */
-
 .result { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
 .head { display: flex; gap: 16px; align-items: flex-start; }
 .cover { width: 176px; aspect-ratio: 16/9; object-fit: cover; border-radius: var(--r); flex: none; background: rgba(255, 255, 255, 0.06); }
@@ -168,8 +155,6 @@ body[data-theme="terminal"] h2 { font-size: 14px; font-weight: 500; }
 .skel.line { height: 14px; margin-top: 8px; }
 .w60 { width: 60%; } .w30 { width: 30%; }
 @keyframes shimmer { to { background-position: -200% 0; } }
-
-/* ---------------------------------- Downloads -------------------------------- */
 
 .queue { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
 .qhead { display: flex; justify-content: space-between; align-items: center; }
@@ -195,8 +180,6 @@ body[data-theme="terminal"] .track i { border-radius: 0; background: repeating-l
 .qa { display: flex; gap: 6px; flex: none; }
 .qa button { height: 28px; padding: 0 10px; border-radius: calc(var(--r) * 0.6); background: rgba(255, 255, 255, 0.08); border: 0; color: var(--fg); font-size: 12px; }
 .qa button:hover { background: rgba(255, 255, 255, 0.16); }
-
-/* ------------------------------ Overlays / Toasts ---------------------------- */
 
 .overlay { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(6px); }
 .modal { width: min(520px, 92vw); padding: 24px; display: flex; flex-direction: column; gap: 14px; background: color-mix(in srgb, #0d0d14 90%, var(--ac)); }

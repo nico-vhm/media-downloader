@@ -14,8 +14,6 @@ if (!app.requestSingleInstanceLock()) {
   return;
 }
 
-/* ------------------------------- Persistenz ------------------------------- */
-
 const userFile = (n) => path.join(app.getPath('userData'), n);
 const load = (n, d) => {
   try {
@@ -64,7 +62,6 @@ function cleanSettings(s) {
   };
 }
 
-/** Das Secret liegt verschlüsselt (Windows-DPAPI) auf der Platte und verlässt den Main-Prozess nie. */
 const pubSettings = () => ({ ...settings, spotifySecret: settings.spotifySecret ? '1' : '' });
 const spotifyCreds = () => {
   try {
@@ -82,8 +79,6 @@ const applyPatch = (patch) => {
   settings = cleanSettings({ ...settings, ...p });
   save('settings.json', settings);
 };
-
-/* --------------------------------- Fenster -------------------------------- */
 
 let win;
 const send = (ch, ...a) => win && !win.isDestroyed() && win.webContents.send(ch, ...a);
@@ -109,8 +104,6 @@ function createWindow() {
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   win.webContents.on('will-navigate', (e) => e.preventDefault());
 }
-
-/* -------------------------------- Werkzeuge ------------------------------- */
 
 let bin = tools.paths(app.getPath('userData'));
 let toolsReady = Promise.resolve();
@@ -142,10 +135,8 @@ async function maybeUpdate(force) {
   return tools.update(app.getPath('userData'));
 }
 
-/* -------------------------------- Warteschlange --------------------------- */
-
 const items = new Map();
-const infoCache = new Map(); // Video-ID -> Info-JSON (spart yt-dlp die zweite Extraktion)
+const infoCache = new Map();
 const dirty = new Set();
 let flushTimer = null;
 let seq = 0;
@@ -154,7 +145,6 @@ const pub = ({ ac, infoFile, _ls, ...i }) => i;
 const OPEN = ['queued', 'active', 'paused'];
 const anyOpen = () => [...items.values()].some((i) => OPEN.includes(i.status));
 
-/* Archiv: merkt sich geladene Medien, damit Playlists sie überspringen */
 let archive = {};
 const akey = (it) => `${it.key}|${it.mode === 'audio' ? it.fmt : 'video'}`;
 const haveKeys = () => new Set(Object.entries(archive).filter(([, f]) => fs.existsSync(f)).map(([k]) => k.split('|')[0]));
@@ -279,7 +269,6 @@ async function run(it) {
     }
     batchDone++;
   } catch (e) {
-    // Pause: Prozess beenden, .part-Dateien bleiben liegen, yt-dlp setzt beim Fortsetzen dort an
     it.status = e.cancelled ? (it.pause ? 'paused' : 'cancelled') : 'error';
     it.error = e.cancelled ? '' : e.message;
     if (it.status === 'paused') Object.assign(it, { speed: 0, eta: 0, phase: '' });
@@ -293,7 +282,6 @@ async function run(it) {
   }
 }
 
-/** Stapel fertig: Benachrichtigung und optional Herunterfahren (60 s Frist zum Abbrechen). */
 function finishBatch() {
   if (!batchDone && !batchFail) return;
   const [done, fail] = [batchDone, batchFail];
@@ -309,8 +297,6 @@ function finishBatch() {
   }
 }
 
-/* ---------------------------------- IPC ----------------------------------- */
-
 const need = (id) => items.get(id) || null;
 
 ipcMain.handle('init', () => {
@@ -321,7 +307,7 @@ ipcMain.handle('init', () => {
     if (i.status === 'done') {
       if (i.file && fs.existsSync(i.file)) items.set(i.id, i);
     } else if (i.status === 'error' || i.status === 'paused') items.set(i.id, i);
-    else items.set(i.id, { ...i, status: 'queued', percent: 0, speed: 0, eta: 0, phase: '' }); // unterbrochen: läuft nach dem Start weiter
+    else items.set(i.id, { ...i, status: 'queued', percent: 0, speed: 0, eta: 0, phase: '' });
   }
   const ready = tools.isReady(app.getPath('userData'));
   if (ready) setTimeout(() => maybeUpdate(false).catch(() => {}), 4000);
@@ -460,8 +446,6 @@ ipcMain.on('win', (e, cmd) => {
   else if (cmd === 'max') win.isMaximized() ? win.unmaximize() : win.maximize();
   else if (cmd === 'close') win.close();
 });
-
-/* ---------------------------------- Start --------------------------------- */
 
 app.on('second-instance', () => {
   if (!win) return;

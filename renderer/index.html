@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' https: data:; style-src 'self'; script-src 'self'; media-src 'none'; connect-src 'none'" />
+  <title>Media Downloader</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-theme="aurora" data-platform="">
+  <div class="bg" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i></div>
+
+  <header class="top">
+    <div class="brand"><svg class="logo" viewBox="0 0 128 128"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#67e8f9"/><stop offset="1" stop-color="#0891b2"/></linearGradient></defs><path d="M64 8l48 28v56l-48 28-48-28V36z" fill="url(#lg)"/><path d="M48 38l36 20-36 20z" fill="#0a0a10"/><path d="M64 84v18M54 94l10 10 10-10" fill="none" stroke="#0a0a10" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="brand">Media Downloader</span></div>
+    <div class="grow"></div>
+    <span id="summary" class="summary"></span>
+    <button id="theme-btn" class="tbtn" title="Design wechseln">Aurora</button>
+    <button id="settings-btn" class="tbtn" title="Einstellungen" aria-label="Einstellungen">
+      <svg viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
+    </button>
+    <div class="wc">
+      <button data-win="min" aria-label="Minimieren"><svg viewBox="0 0 10 10"><path d="M0 5.5h10"/></svg></button>
+      <button data-win="max" aria-label="Maximieren"><svg id="max-ico" viewBox="0 0 10 10"><rect x=".5" y=".5" width="9" height="9"/></svg></button>
+      <button data-win="close" class="close" aria-label="Schließen"><svg viewBox="0 0 10 10"><path d="M0 0l10 10M10 0L0 10"/></svg></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="entry glass">
+      <h1 id="headline">Link einfügen</h1>
+      <div class="field">
+        <span id="plat" class="plat" aria-hidden="true"></span>
+        <input id="url" type="text" spellcheck="false" autocomplete="off" placeholder="YouTube- oder Spotify-Link" />
+        <button id="paste" class="ghost">Einfügen</button>
+        <button id="go" class="primary" aria-label="Laden"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+      <p id="msg" class="msg" role="status"></p>
+    </section>
+
+    <section id="result" class="result glass" hidden></section>
+
+    <section id="stats" class="stats glass" aria-label="Statistik">
+      <div><b id="st-today">0</b><span>Heute</span></div>
+      <div><b id="st-all">0</b><span>Insgesamt</span></div>
+      <div><b id="st-size">0 MB</b><span>Datenmenge</span></div>
+      <div><b id="st-mix">0 / 0</b><span>Songs / Videos</span></div>
+    </section>
+
+    <section class="queue">
+      <div class="qhead">
+        <span class="label">Downloads</span>
+        <div id="qfilter" class="qfilter" hidden><input id="qsearch" type="search" placeholder="Suchen …" spellcheck="false" autocomplete="off" /><div id="qplat" class="seg"></div></div>
+        <button id="clear" class="link" hidden>Fertige entfernen</button>
+      </div>
+      <div id="qlist" class="qlist"></div>
+      <p id="qempty" class="qempty">Noch nichts geladen. Füge oben einen Link ein.</p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <button id="folder-btn" class="tbtn" title="Zielordner öffnen">
+      <svg viewBox="0 0 24 24"><path d="M4 6a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6z"/></svg>
+      <span id="folder-name"></span>
+    </button>
+    <span id="disk" class="muted"></span>
+    <div class="grow"></div>
+    <div id="batch" class="batch" hidden><div class="track"><i id="batch-bar"></i></div><span id="batch-txt"></span><button id="pause-all" class="tbtn" title="Alle Downloads pausieren">Pause</button><button id="cancel-all" class="tbtn" title="Alle Downloads abbrechen">Abbrechen</button></div>
+    <span id="ver" class="muted"></span>
+  </footer>
+
+  <div id="setup" class="overlay" hidden>
+    <div class="modal glass">
+      <h2>Werkzeuge werden vorbereitet</h2>
+      <p id="setup-step" class="muted">yt-dlp und ffmpeg werden einmalig geladen …</p>
+      <div class="track"><i id="setup-bar"></i></div>
+      <p id="setup-err" class="msg err" hidden></p>
+      <button id="setup-retry" class="primary wide" hidden>Erneut versuchen</button>
+    </div>
+  </div>
+
+  <div id="settings" class="overlay" hidden>
+    <div class="modal glass">
+      <h2>Einstellungen</h2>
+      <div class="row"><div><b>Zielordner</b><small id="s-dir"></small></div><button id="s-dir-btn" class="ghost">Ändern</button></div>
+      <div class="row"><div><b>Standardqualität</b><small>Vorauswahl für neue Links</small></div><div id="s-quality" class="seg"></div></div>
+      <div class="row"><div><b>Parallele Downloads</b><small>Gleichzeitig aktive Jobs</small></div><div id="s-parallel" class="seg"></div></div>
+      <div class="row"><div><b>Design</b><small>Farbe folgt dem Link: YouTube rot, Spotify grün</small></div><div id="s-theme" class="seg"></div></div>
+      <div class="row"><div><b>Sprache</b><small>Oberfläche</small></div><div id="s-lang" class="seg"></div></div>
+      <div class="row"><div><b>Audio-Format</b><small>Für Audio-Downloads und Spotify</small></div><div id="s-audio" class="seg"></div></div>
+      <div class="row"><div><b>Untertitel</b><small>Deutsch und Englisch ins Video einbetten</small></div><div id="s-subs" class="seg"></div></div>
+      <div class="row"><div><b>Kapitel</b><small>Kapitelmarken ins Video einbetten</small></div><div id="s-chapters" class="seg"></div></div>
+      <div class="row"><div><b>Unterordner</b><small>Sortiert nach Kanal, Künstler oder Playlist</small></div><div id="s-folders" class="seg"></div></div>
+      <div class="row"><div><b>Tempolimit</b><small>Gesamt in MB/s, ∞ = unbegrenzt</small></div><div id="s-limit" class="seg"></div></div>
+      <div class="row"><div><b>Lautstärke angleichen</b><small>Gleiche Lautheit bei Audio-Downloads</small></div><div id="s-norm" class="seg"></div></div>
+      <div class="row"><div><b>Benachrichtigung</b><small>Hinweis, wenn alle Downloads fertig sind</small></div><div id="s-notify" class="seg"></div></div>
+      <div class="row"><div><b>Danach herunterfahren</b><small>Einmalig nach dem nächsten Stapel, 60 s zum Abbrechen</small></div><div id="s-after" class="seg"></div></div>
+      <div class="row"><div><b>Browser-Cookies</b><small>Für altersbeschränkte oder private Videos (bei Chrome und Edge oft nicht möglich)</small></div><div id="s-cookies" class="seg"></div></div>
+      <div class="row col"><div><b>Spotify-API (optional)</b><small>Nur nutzbar, wenn dein Spotify-Entwicklerkonto Web API freigeschaltet hat (aktuell Premium). Ohne: Songs in Spotify markieren (Strg+A), Strg+C, hier einfügen.</small></div>
+        <div class="creds"><input id="s-id" type="text" placeholder="Client-ID" spellcheck="false" autocomplete="off" /><input id="s-secret" type="password" placeholder="Client-Secret" autocomplete="off" /><button id="s-spot-save" class="ghost">Speichern</button></div></div>
+      <div class="row"><div><b>yt-dlp</b><small id="s-ver">…</small></div><button id="s-update" class="ghost">Aktualisieren</button></div>
+      <p class="muted fine">Nur für den privaten Gebrauch und Inhalte, an denen du die Rechte hast. DRM wird nicht umgangen. Spotify-Songs werden auf YouTube gesucht und als MP3 geladen.</p>
+      <button id="s-close" class="primary wide">Fertig</button>
+    </div>
+  </div>
+
+  <div id="shutdown" class="overlay" hidden>
+    <div class="modal glass">
+      <h2>PC wird heruntergefahren</h2>
+      <p id="sd-text" class="muted"></p>
+      <button id="sd-cancel" class="primary wide">Abbrechen</button>
+    </div>
+  </div>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

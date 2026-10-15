@@ -69,7 +69,6 @@ body[data-theme="terminal"] .glass { box-shadow: none; border-radius: var(--r); 
 .tbtn:hover { color: var(--fg); background: rgba(255, 255, 255, 0.08); }
 .tbtn svg { width: 16px; height: 16px; }
 
-/* Windows-Fensterbuttons */
 .wc { display: flex; height: 40px; margin-left: 6px; }
 .wc button { width: 46px; height: 40px; display: grid; place-items: center; border: 0; background: transparent; color: var(--fg); }
 .wc button:hover { background: rgba(255, 255, 255, 0.1); }
